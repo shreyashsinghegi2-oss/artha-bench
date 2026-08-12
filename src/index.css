@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@layer components {
+  .tutor-select {
+    @apply w-full rounded-xl border border-zinc-800 bg-zinc-950 px-2.5 py-2 text-xs text-zinc-200 outline-none transition-colors focus:border-indigo-500;
+  }
+
+  .tutor-toolbar-button {
+    @apply inline-flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-[11px] font-semibold text-zinc-300 transition-colors hover:border-zinc-700 hover:bg-zinc-800 hover:text-white;
+  }
+
+  .tutor-section-title {
+    @apply flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-400;
+  }
+}

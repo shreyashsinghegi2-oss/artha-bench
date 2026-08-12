@@ -1,6 +1,6 @@
 import Decimal from 'decimal.js';
-import { FinanceMathEngine } from '../src/engine/financeMath';
-import { CurrencyCode, TutorCalculation, TutorCalculationInputs } from '../src/types';
+import { FinanceMathEngine } from '../src/engine/financeMath.js';
+import { CurrencyCode, TutorCalculation, TutorCalculationInputs } from '../src/types.js';
 
 const emptyInputs = (): TutorCalculationInputs => ({
   principal: null,

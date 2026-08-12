@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { GroqConnectionStatus, GroqDiagnosticState, GroqModelDiagnostic } from '../src/types';
+import { GroqConnectionStatus, GroqDiagnosticState, GroqModelDiagnostic } from '../src/types.js';
 
 const GROQ_BASE_URL = 'https://api.groq.com/openai/v1';
 const SUCCESS_CACHE_TTL_MS = 5 * 60 * 1000;

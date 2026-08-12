@@ -3,7 +3,7 @@ import {
   TutorAnswer,
   TutorChatResponse,
   TutorHistoryTurn,
-} from '../src/types';
+} from '../src/types.js';
 import {
   tutorAnswerJsonSchema,
   tutorAnswerSchema,
@@ -12,10 +12,10 @@ import {
   tutorReviewJsonSchema,
   tutorReviewSchema,
   TutorReviewParsed,
-} from '../src/schemas/tutorSchema';
-import { EvidenceService } from './evidenceService';
-import { callGroqChat, getGroqModels, GroqRequestError, safeGroqMessage } from './groqClient';
-import { detectTutorCalculation } from './tutorCalculation';
+} from '../src/schemas/tutorSchema.js';
+import { EvidenceService } from './evidenceService.js';
+import { callGroqChat, getGroqModels, GroqRequestError, safeGroqMessage } from './groqClient.js';
+import { detectTutorCalculation } from './tutorCalculation.js';
 
 export const FINANCIAL_TUTOR_SYSTEM_PROMPT = `You are Artha Financial Tutor, an educational assistant inside Artha Bench.
 

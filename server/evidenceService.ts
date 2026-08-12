@@ -1,5 +1,5 @@
-import { CountryCode, EvidenceResearchResult, EvidenceSource } from '../src/types';
-import { callGroqChat, getGroqModels, GroqRequestError } from './groqClient';
+import { CountryCode, EvidenceResearchResult, EvidenceSource } from '../src/types.js';
+import { callGroqChat, getGroqModels, GroqRequestError } from './groqClient.js';
 
 export const OFFICIAL_DOMAINS_BY_COUNTRY: Record<string, string[]> = {
   IN: ['rbi.org.in', 'sebi.gov.in', 'incometax.gov.in', 'irdai.gov.in', 'pfrda.org.in', 'npci.org.in'],

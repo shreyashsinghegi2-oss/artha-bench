@@ -1,5 +1,5 @@
-import { CountryCode, CurrencyCode, DifficultyLevel, GeneratedAnswerResponse, RiskLevel, TopicCategory } from '../src/types';
-import { callGroqChat, getGroqModels } from './groqClient';
+import { CountryCode, CurrencyCode, DifficultyLevel, GeneratedAnswerResponse, RiskLevel, TopicCategory } from '../src/types.js';
+import { callGroqChat, getGroqModels } from './groqClient.js';
 
 const GENERATOR_SYSTEM_PROMPT = `You are Artha Bench Educational Answer Generator.
 Your purpose is to produce clean, well-reasoned, educational responses to personal finance questions to test benchmarking engines.

@@ -1,14 +1,14 @@
 import express, { Request, Response } from 'express';
 import { createHash, randomUUID } from 'crypto';
 import dotenv from 'dotenv';
-import { diagnosticStateFromUnknown, GroqRequestError, safeGroqMessage, verifyGroqConnection } from './server/groqClient';
-import { EvaluationPipelineError, EvaluatorService } from './server/evaluatorService';
-import { AnswerGenerator } from './server/answerGenerator';
-import { EvidenceService } from './server/evidenceService';
-import { containsSecretValue, TutorService } from './server/tutorService';
-import { tutorChatInputSchema } from './src/schemas/tutorSchema';
-import { BatchJob, ComprehensiveEvaluationReport } from './src/types';
-import { BENCHMARK_SCENARIOS } from './src/data/scenarios';
+import { diagnosticStateFromUnknown, GroqRequestError, safeGroqMessage, verifyGroqConnection } from './server/groqClient.js';
+import { EvaluationPipelineError, EvaluatorService } from './server/evaluatorService.js';
+import { AnswerGenerator } from './server/answerGenerator.js';
+import { EvidenceService } from './server/evidenceService.js';
+import { containsSecretValue, TutorService } from './server/tutorService.js';
+import { tutorChatInputSchema } from './src/schemas/tutorSchema.js';
+import { BatchJob, ComprehensiveEvaluationReport } from './src/types.js';
+import { BENCHMARK_SCENARIOS } from './src/data/scenarios.js';
 
 dotenv.config();
 

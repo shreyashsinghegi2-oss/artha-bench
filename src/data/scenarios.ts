@@ -1,4 +1,4 @@
-import { BenchmarkScenario } from '../types';
+import { BenchmarkScenario } from '../types.js';
 
 export const BENCHMARK_SCENARIOS: BenchmarkScenario[] = [
   {

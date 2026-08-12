@@ -1,5 +1,5 @@
 import Decimal from 'decimal.js';
-import { DeterministicCheckResult, DeterministicEngineReport } from '../types';
+import { DeterministicCheckResult, DeterministicEngineReport } from '../types.js';
 
 Decimal.set({ precision: 20, rounding: Decimal.ROUND_HALF_UP });
 

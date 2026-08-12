@@ -10,17 +10,17 @@ import {
   RiskLevel,
   StrictnessLevel,
   TopicCategory,
-} from '../src/types';
-import { FinanceMathEngine } from '../src/engine/financeMath';
-import { evaluatorJsonSchema, evaluatorSchemaOutputZod } from '../src/schemas/evaluatorSchema';
-import { EvidenceService } from './evidenceService';
+} from '../src/types.js';
+import { FinanceMathEngine } from '../src/engine/financeMath.js';
+import { evaluatorJsonSchema, evaluatorSchemaOutputZod } from '../src/schemas/evaluatorSchema.js';
+import { EvidenceService } from './evidenceService.js';
 import {
   callGroqChat,
   diagnosticStateFromUnknown,
   getGroqModels,
   GroqRequestError,
   safeGroqMessage,
-} from './groqClient';
+} from './groqClient.js';
 
 const SYSTEM_EVALUATOR_PROMPT = `You are Artha Bench, a strict research evaluator of AI-generated personal-finance information.
 

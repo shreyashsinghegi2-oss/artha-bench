@@ -45,10 +45,12 @@ test('invalid credential is safely mapped', async () => {
 test('successful model list plus evaluator chat checks verifies the provider', async () => {
   process.env.GROQ_API_KEY = 'unit-test-secret-value';
   let calls = 0;
-  globalThis.fetch = async (input) => {
+  const probeTokenBudgets: number[] = [];
+  globalThis.fetch = async (input, init) => {
     calls += 1;
     const url = String(input);
     if (url.endsWith('/models')) return modelList();
+    probeTokenBudgets.push(JSON.parse(String(init?.body)).max_tokens);
     return new Response(JSON.stringify({
       choices: [{ message: { content: 'OK' } }],
       usage: { prompt_tokens: 1, completion_tokens: 1, total_tokens: 2 },
@@ -59,6 +61,8 @@ test('successful model list plus evaluator chat checks verifies the provider', a
   assert.equal(result.state, 'connected');
   assert.equal(result.components?.filter((item) => item.verified).length, 4);
   assert.equal(calls, 3);
+  assert.equal(probeTokenBudgets.length, 2);
+  assert.ok(probeTokenBudgets.every((budget) => budget >= 128));
 });
 
 test('missing primary model is reported without running chat checks', async () => {

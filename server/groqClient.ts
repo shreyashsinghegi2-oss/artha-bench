@@ -401,7 +401,9 @@ export async function verifyGroqConnection(forceFresh = false): Promise<GroqConn
         systemPrompt: 'You are a connection test. Reply only with OK.',
         userPrompt: 'OK',
         temperature: 0,
-        maxTokens: 8,
+        // GPT-OSS reasoning can consume a very small budget before emitting
+        // visible text. Leave enough room for the probe's final "OK" token.
+        maxTokens: 128,
         timeoutMs: 10000,
         maxRetries: 0,
       }),
@@ -410,7 +412,7 @@ export async function verifyGroqConnection(forceFresh = false): Promise<GroqConn
         systemPrompt: 'You are a connection test. Reply only with OK.',
         userPrompt: 'OK',
         temperature: 0,
-        maxTokens: 8,
+        maxTokens: 128,
         timeoutMs: 10000,
         maxRetries: 0,
       }),

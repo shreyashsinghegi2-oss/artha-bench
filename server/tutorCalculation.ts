@@ -42,6 +42,11 @@ function amountBefore(message: string, labels: string[]) {
   return parseAmount(message.match(expression)?.[1]);
 }
 
+function firstCurrencyAmount(message: string) {
+  const raw = message.match(/[$₹£€]\s*([0-9,]+(?:\.[0-9]+)?)/)?.[1];
+  return parseAmount(raw);
+}
+
 function percent(message: string) {
   const raw = message.match(/([0-9]+(?:\.[0-9]+)?)\s*%/)?.[1];
   return raw ? Number.parseFloat(raw) : null;
@@ -93,7 +98,8 @@ export function detectTutorCalculation(message: string, currency: CurrencyCode):
   }
 
   if ((lower.includes('compound') || lower.includes('future value')) && ratePercent !== null && timeYears !== null) {
-    const principal = amountAfter(message, ['principal', 'amount', 'invest', 'invested', 'deposit', 'of']);
+    const principal = amountAfter(message, ['principal', 'amount', 'invest', 'invested', 'deposit', 'of'])
+      ?? firstCurrencyAmount(message);
     if (principal !== null) {
       const result = FinanceMathEngine.calculateCompoundFV(principal, ratePercent / 100, 1, timeYears);
       return verified({
@@ -110,7 +116,8 @@ export function detectTutorCalculation(message: string, currency: CurrencyCode):
   }
 
   if ((lower.includes('simple interest') || lower.includes('simple-interest')) && ratePercent !== null && timeYears !== null) {
-    const principal = amountAfter(message, ['principal', 'amount', 'loan', 'deposit', 'of']);
+    const principal = amountAfter(message, ['principal', 'amount', 'loan', 'deposit', 'of'])
+      ?? firstCurrencyAmount(message);
     if (principal !== null) {
       const result = FinanceMathEngine.calculateSimpleInterest(principal, ratePercent / 100, timeYears);
       return verified({
@@ -127,7 +134,8 @@ export function detectTutorCalculation(message: string, currency: CurrencyCode):
   }
 
   if ((lower.includes('emi') || lower.includes('loan payment') || lower.includes('mortgage')) && ratePercent !== null) {
-    const principal = amountAfter(message, ['loan', 'principal', 'borrowed', 'amount', 'of']);
+    const principal = amountAfter(message, ['loan', 'principal', 'borrowed', 'amount', 'of'])
+      ?? firstCurrencyAmount(message);
     const monthMatch = message.match(/([0-9]+(?:\.[0-9]+)?)\s*months?/i)?.[1];
     const months = monthMatch ? Number.parseFloat(monthMatch) : timeYears !== null ? timeYears * 12 : null;
     if (principal !== null && months !== null) {

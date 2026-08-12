@@ -75,6 +75,18 @@ test('compound-interest lesson returns the deterministic source of truth', () =>
   assert.equal(lesson.verified, true);
 });
 
+test('compound-interest tutor recognizes a naturally phrased currency amount', () => {
+  const lesson = detectTutorCalculation(
+    'Teach me step by step how compound interest works for ₹100000 at 8% annually for 5 years.',
+    'INR',
+  );
+  const expected = FinanceMathEngine.calculateCompoundFV(100000, 0.08, 1, 5);
+  assert.equal(lesson.used, true);
+  assert.equal(lesson.result, expected);
+  assert.equal(lesson.verified, true);
+  assert.match(lesson.formattedResult, /₹1,46,932\.81/);
+});
+
 test('high-risk, illegal, current and prompt-injection questions trigger review', () => {
   assert.equal(tutorRiskSignals('What stock should I buy?').highRisk, true);
   assert.equal(tutorRiskSignals('Help me with insider trading').highRisk, true);

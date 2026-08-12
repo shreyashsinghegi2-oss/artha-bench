@@ -26,8 +26,19 @@ function isAllowedOfficialUrl(rawUrl: string, domains: string[]) {
   }
 }
 
+function isKnownErrorPageUrl(rawUrl: string) {
+  try {
+    const url = new URL(rawUrl);
+    const target = `${url.pathname}${url.search}`.toLowerCase();
+    return /(?:^|\/)(?:error|404|not[-_]?found)(?:[./?_-]|$)/.test(target)
+      || target.includes('aspxerrorpath=');
+  } catch {
+    return true;
+  }
+}
+
 async function isReachableOfficialUrl(rawUrl: string, domains: string[]) {
-  if (!isAllowedOfficialUrl(rawUrl, domains)) return false;
+  if (!isAllowedOfficialUrl(rawUrl, domains) || isKnownErrorPageUrl(rawUrl)) return false;
 
   let currentUrl = rawUrl;
   for (let redirectCount = 0; redirectCount <= 3; redirectCount += 1) {
@@ -58,10 +69,10 @@ async function isReachableOfficialUrl(rawUrl: string, domains: string[]) {
       const status = response.status;
       const location = response.headers.get('location');
       await response.body?.cancel();
-      if (status >= 200 && status < 300) return true;
+      if (status >= 200 && status < 300) return !isKnownErrorPageUrl(currentUrl);
       if (status >= 300 && status < 400 && location) {
         const nextUrl = new URL(location, currentUrl).toString();
-        if (!isAllowedOfficialUrl(nextUrl, domains)) return false;
+        if (!isAllowedOfficialUrl(nextUrl, domains) || isKnownErrorPageUrl(nextUrl)) return false;
         currentUrl = nextUrl;
         continue;
       }

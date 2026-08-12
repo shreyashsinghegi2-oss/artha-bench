@@ -33,6 +33,12 @@ test('evidence service keeps only reachable URLs on allow-listed official domain
             authorityDomain: 'sebi.gov.in',
           },
           {
+            title: 'Soft error page',
+            url: 'https://www.rbi.org.in/Scripts/FakeDocument.aspx?Id=1234',
+            snippet: 'Redirects to an error page.',
+            authorityDomain: 'rbi.org.in',
+          },
+          {
             title: 'Disallowed source',
             url: 'https://example.com/not-official',
             snippet: 'Not official.',
@@ -45,7 +51,14 @@ test('evidence service keeps only reachable URLs on allow-listed official domain
         headers: { 'Content-Type': 'application/json' },
       });
     }
-    return new Response('', { status: url.includes('/guidance') ? 200 : 404 });
+    if (url.includes('/guidance')) return new Response('', { status: 200 });
+    if (url.includes('/FakeDocument.aspx')) {
+      return new Response('', {
+        status: 302,
+        headers: { Location: '/Scripts/Error.aspx?aspxerrorpath=/Scripts/FakeDocument.aspx' },
+      });
+    }
+    return new Response('', { status: 404 });
   };
 
   const evidence = await EvidenceService.researchEvidence('IN', 'regulation', 'What is the current rule?');

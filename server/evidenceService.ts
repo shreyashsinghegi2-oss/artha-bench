@@ -26,6 +26,55 @@ function isAllowedOfficialUrl(rawUrl: string, domains: string[]) {
   }
 }
 
+async function isReachableOfficialUrl(rawUrl: string, domains: string[]) {
+  if (!isAllowedOfficialUrl(rawUrl, domains)) return false;
+
+  let currentUrl = rawUrl;
+  for (let redirectCount = 0; redirectCount <= 3; redirectCount += 1) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    try {
+      let response = await fetch(currentUrl, {
+        method: 'HEAD',
+        redirect: 'manual',
+        signal: controller.signal,
+        headers: { 'User-Agent': 'Artha-Bench/2.0 official-source-verifier' },
+      });
+
+      // A small ranged GET covers official sites that do not implement HEAD.
+      if (response.status === 405) {
+        await response.body?.cancel();
+        response = await fetch(currentUrl, {
+          method: 'GET',
+          redirect: 'manual',
+          signal: controller.signal,
+          headers: {
+            'Range': 'bytes=0-0',
+            'User-Agent': 'Artha-Bench/2.0 official-source-verifier',
+          },
+        });
+      }
+
+      const status = response.status;
+      const location = response.headers.get('location');
+      await response.body?.cancel();
+      if (status >= 200 && status < 300) return true;
+      if (status >= 300 && status < 400 && location) {
+        const nextUrl = new URL(location, currentUrl).toString();
+        if (!isAllowedOfficialUrl(nextUrl, domains)) return false;
+        currentUrl = nextUrl;
+        continue;
+      }
+      return false;
+    } catch {
+      return false;
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+  return false;
+}
+
 export class EvidenceService {
   /**
    * Check if the topic/question requires authoritative regulatory/tax research
@@ -120,7 +169,7 @@ Return ONLY a structured JSON object:
         // Fallback if raw JSON formatting issue
       }
 
-      const sources: EvidenceSource[] = (Array.isArray(parsed.sources) ? parsed.sources : [])
+      const candidates: EvidenceSource[] = (Array.isArray(parsed.sources) ? parsed.sources : [])
         .filter((s: any) => isAllowedOfficialUrl(String(s?.url || '').trim(), domains))
         .map((s: any) => ({
           title: String(s.title || 'Official Government / Regulatory Guidance'),
@@ -130,13 +179,17 @@ Return ONLY a structured JSON object:
           retrievedAt: new Date().toISOString(),
           effectiveDate: s.effectiveDate ? String(s.effectiveDate) : undefined,
         }));
+      const reachability = await Promise.all(
+        candidates.map((source) => isReachableOfficialUrl(source.url, domains))
+      );
+      const sources = candidates.filter((_, index) => reachability[index]);
 
       return {
         queryUsed: `Official statutory lookup: ${topic} (${country})`,
         sources,
         summary: sources.length > 0
           ? String(parsed.summary || `Official-source evidence retrieved for ${country} ${topic}.`)
-          : 'No allow-listed official source could be verified. Treat current claims as unverified.',
+          : 'No reachable allow-listed official source could be verified. Treat current claims as unverified.',
         regulatoryVerified: sources.length > 0 && parsed.regulatoryVerified === true,
       };
     } catch {

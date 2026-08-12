@@ -1,5 +1,4 @@
 import express, { Request, Response } from 'express';
-import path from 'path';
 import { createHash, randomUUID } from 'crypto';
 import dotenv from 'dotenv';
 import { diagnosticStateFromUnknown, GroqRequestError, safeGroqMessage, verifyGroqConnection } from './server/groqClient';
@@ -14,7 +13,6 @@ import { BENCHMARK_SCENARIOS } from './src/data/scenarios';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 app.use(express.json({ limit: '2mb' }));
 
@@ -424,32 +422,5 @@ app.post('/api/batches/:id/cancel', (req: Request, res: Response) => {
     res.status(404).json({ error: 'Batch not found.' });
   }
 });
-
-async function startServer() {
-  if (process.env.NODE_ENV === 'production') {
-    const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (_req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
-    });
-  } else {
-    const { createServer: createViteServer } = await import('vite');
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: 'spa',
-    });
-    app.use(vite.middlewares);
-  }
-
-  app.listen(PORT, () => {
-    console.log(`[Artha Bench Server] Running on http://localhost:${PORT}`);
-  });
-}
-
-// Vercel imports the Express app as a serverless function. Local and traditional
-// Node deployments continue to use the existing HTTP listener.
-if (!process.env.VERCEL) {
-  startServer();
-}
 
 export default app;
